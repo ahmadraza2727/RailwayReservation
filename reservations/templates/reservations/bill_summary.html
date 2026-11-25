@@ -1,0 +1,97 @@
+{%extends "reservations/main.html"%}
+{%block title%}
+seat selection
+{%endblock%}
+{%block content%}
+<!-- templates/bill_summary.html -->
+<div class="max-w-4xl mx-auto mt-10 p-8 rounded-lg bg-white shadow-lg">
+    <!-- Bill Summary Header -->
+    <h2 class="text-2xl font-bold text-gray-700 mb-6">Bill Summary</h2>
+
+    {% if bill.total_amount > 0 %}
+        <!-- Bill Details -->
+        <div class="mb-6 bg-gray-50 p-4 rounded-lg shadow-sm">
+            <p class="text-gray-600 mb-2">
+                <span class="font-semibold text-gray-800">Bill ID:</span> {{ bill.id }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                <span class="font-semibold text-gray-800">Total Amount:</span> Rs{{ bill.total_amount }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                <span class="font-semibold text-gray-800">Created At:</span> {{ bill.created_at }}
+            </p>
+        </div>
+
+        <!-- Bookings Header -->
+        <h3 class="text-xl font-semibold text-gray-700 mb-4">Bookings Included:</h3>
+
+        <!-- Booking List -->
+<ul class="space-y-6">
+    {% for booking in bookings %}
+        <li class="bg-white shadow-lg rounded-xl px-8 py-6 flex items-center justify-between space-x-6 hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105">
+            <!-- Booking Icon -->
+            {% if booking.bed == None %}
+                <div class="flex-shrink-0">
+                    <span class="inline-block bg-red-100 text-red-600 font-medium text-sm rounded-full px-4 py-2">
+                        Seat {{ booking.seat }}
+                    </span>
+                </div>
+            {% else %}
+                <div class="flex-shrink-0">
+                    <span class="inline-block bg-green-100 text-green-600 font-medium text-sm rounded-full px-4 py-2">
+                        Bed {{ booking.bed }}
+                    </span>
+                </div>
+            {% endif %}
+
+            <!-- Booking Details -->
+            <div class="flex-grow space-y-2">
+                <p class="text-gray-800 font-semibold text-lg">{{ booking.schedule }}</p>
+                <p class="text-sm text-gray-500">Rs {{ booking.cost }}</p>
+            </div>
+
+            <!-- Booking Cost and Date -->
+            <div class="text-right flex flex-col justify-between space-y-2">
+                <span class="text-gray-700 font-bold text-lg">
+                    Rs {{ booking.cost }}
+                </span>
+                <p class="text-xs text-gray-500">{{ booking.onData }}</p>
+            </div>
+
+            <!-- Remove Button -->
+            <form method="POST" action="{% url 'remove_booking' booking.id %}" class="ml-6">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white text-sm font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-red-600 transition duration-300">
+                    Remove
+                </button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+
+
+
+        <!-- Checkout Button -->
+        <div class="mt-6 text-center">
+            <form method="GET" action="{% url 'checkout_bill' bill.id %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="bg-red-500 text-white py-2 px-6 rounded-lg shadow hover:bg-red-600 transition duration-300">
+                    Checkout Bill #{{ bill.id }}
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Nothing to See -->
+        <div class="bg-yellow-100 p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Oops! Nothing Here To See</h2>
+            <p class="text-gray-600 mb-4">It looks like your bill is empty. Maybe add some bookings?</p>
+            <div class="flex justify-center">
+                <img src="https://via.placeholder.com/150/FFC107/FFFFFF?text=Empty" alt="Empty Icon" class="w-24 h-24">
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{%endblock%}
